@@ -1,0 +1,25 @@
+clear all
+close all
+nIn = 10e+5;
+nOut = nIn;
+
+%draw theta apriori uniform between 0 and 1. Draw fresh batch for each d
+design=linspace(0,1,10);
+%design space between 0 and 1
+for ind = 1:length(design)
+    d = design(ind);
+    theta = unifrnd(0,1,[nIn,1]);
+    sum = 0;
+    for i = 1:nOut
+        yi = y(theta(i),d);
+        pYiGivenD = 0;
+        for j = 1:nIn
+            pYiGivenD = Likelihood(yi,theta(j),d)+pYiGivenD;
+        end
+        pYiGivenD = pYiGivenD/nIn;
+        sum = log(Likelihood(yi,theta(i),d)+10e-30)-log(pYiGivenD + 10e-30) + sum;
+    end         
+    information(ind) = sum/nOut;
+end
+
+plot(design,information)
